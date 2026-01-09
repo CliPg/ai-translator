@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:ui';
@@ -21,7 +22,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.light,
         ),
         useMaterial3: true,
-        fontFamily: '.SF Pro Text',
+        fontFamily: 'system-ui', // 使用系统字体，避免加载Google Fonts
       ),
       home: const TranslatorPage(),
     );
@@ -396,8 +397,17 @@ class _TranslatorPageState extends State<TranslatorPage>
               IconButton(
                 icon: const Icon(Icons.content_copy_rounded, size: 20),
                 color: const Color(0xFF86868B),
-                onPressed: () {
-                  // TODO: 实现复制功能
+                onPressed: () async {
+                  await Clipboard.setData(ClipboardData(text: _translation));
+                  if (mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('已复制到剪贴板'),
+                        duration: Duration(seconds: 2),
+                        behavior: SnackBarBehavior.floating,
+                      ),
+                    );
+                  }
                 },
                 tooltip: '复制',
                 padding: EdgeInsets.zero,
